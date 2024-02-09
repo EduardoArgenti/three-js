@@ -26,6 +26,8 @@ function shadeColor(color, percent) {
     return "#"+RR+GG+BB;
 }
 
+const solver = 'python';
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#87CEEB');
 
@@ -891,7 +893,13 @@ const jsonDataPython = [
     }
 ];
 
-const fittedItems = jsonDataPython;
+let fittedItems;
+
+if(solver == 'python') {
+    fittedItems = jsonDataPython;
+} else {
+    fittedItems = jsonDataPhp;
+}
 
 // Iterar sobre os itens ajustados (fittedItems) e plotá-los
 fittedItems.forEach(itemData => {
@@ -929,20 +937,19 @@ fittedItems.forEach(itemData => {
             break;
     }
 
-    // Criar geometria para o item
-    const itemGeometry = new THREE.BoxGeometry(breadth, height, length);
-
+    // Definir cores
     const itemColor = Math.floor(Math.random() * 0xffffff);
     const lineColorStr = '#' + itemColor.toString(16).padStart(6, '0');
     const lineColor = shadeColor(lineColorStr.toUpperCase(), -40);
 
+    // Criar item
+    const itemGeometry = new THREE.BoxGeometry(breadth, height, length);
+    const itemMaterial = new THREE.MeshBasicMaterial({ color: itemColor, transparent: true, opacity: 0.7 });
+    const itemMesh = new THREE.Mesh(itemGeometry, itemMaterial);
+
     // Criar arestas
     const itemEdges = new THREE.EdgesGeometry( itemGeometry );
     const itemLine = new THREE.LineSegments(itemEdges, new THREE.LineBasicMaterial({color: lineColor, linewidth: 2}));
-
-    // Criar item
-    const itemMaterial = new THREE.MeshBasicMaterial({ color: itemColor, transparent: true, opacity: 0.7 });
-    const itemMesh = new THREE.Mesh(itemGeometry, itemMaterial);
 
     const x_offset = breadth / 2;
     const y_offset = height / 2;
