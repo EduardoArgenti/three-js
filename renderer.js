@@ -33,7 +33,9 @@ const group = new THREE.Object3D();
 
 scene.add(group);
 
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+// const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 1000);
+scene.add( camera );
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
@@ -72,8 +74,6 @@ window.Packing.forEach(binData => {
 
     const solver = binData.solver;
 
-    console.log('dimensoes', cube_width, cube_height, cube_length);
-
     if(solver == 'python') {
 
         const geometry = new THREE.BoxGeometry(cube_width, cube_height, cube_length);
@@ -96,36 +96,30 @@ window.Packing.forEach(binData => {
             // Aplicar rotação com base no rotationType
             switch (itemData.rotationType) {
                 case 1:
-                    console.log(itemData.id, 'case 1');
                     /* Rotaciona no eixo Z */
                     [breadth, height] = [height, breadth];
                     break;
                 case 2:
-                    console.log(itemData.id, 'case 2');
                     /* Rotaciona no eixo Y */
                     [length, breadth] = [breadth, length];
                     [height, breadth] = [breadth, height];
                     break;
                 case 3:
-                    console.log(itemData.id, 'case 3');
                     /* Rotaciona no X e depois Y */
                     // [height, breadth] = [breadth, height];
                     [length, breadth] = [breadth, length];
                     break;
                 case 4:
-                    console.log(itemData.id, 'case 4');
                     /* Rotaciona no X */
                     [length, height] = [height, length];
                     [breadth, height] = [height, breadth];
                     break;
                 case 5:
-                    console.log(itemData.id, 'case 5');
                     /* Rotaciona no X e depois Z */
                     [breadth, length] = [length, breadth];
                     [breadth, height] = [height, breadth];
                     break;
                 default:
-                    console.log(itemData.id, 'default');
                     // Nenhuma rotação
                     break;
             }
