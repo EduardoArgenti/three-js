@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls';
+import {FontLoader} from 'three/addons/loaders/FontLoader';
 
 function shadeColor(color, percent) {
 
@@ -34,8 +35,8 @@ const group = new THREE.Object3D();
 scene.add(group);
 
 // const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-const camera = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 1000);
-scene.add( camera );
+const camera = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 2000);
+scene.add(camera);
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
@@ -52,17 +53,15 @@ renderer.render(scene, camera);
 /*const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(gridHelper);*/
 
-const planeGeometry = new THREE.PlaneGeometry(200, 200);
-const planeMaterial = new THREE.MeshBasicMaterial({color: 0xD4D4D4, side: THREE.DoubleSide});
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-scene.add(plane);
-plane.rotation.x = -0.5 * Math.PI;
-plane.position.y = -1;
+// const planeGeometry = new THREE.PlaneGeometry(200, 200);
+// const planeMaterial = new THREE.MeshBasicMaterial({color: 0xD4D4D4, side: THREE.DoubleSide});
+// const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+// scene.add(plane);
+// plane.rotation.x = -0.5 * Math.PI;
+// plane.position.y = -1;
 
 const axesHelper = new THREE.AxesHelper(10);
 scene.add(axesHelper);
-
-let solver = 'python';
 
 const controls = new OrbitControls( camera, renderer.domElement );
 
@@ -146,6 +145,32 @@ window.Packing.forEach(binData => {
             const y_pos = y_offset + itemData.position['y-axis'];
             const z_pos = z_offset + itemData.position['z-axis'];
 
+            // Criar texto
+            const loader = new FontLoader();
+            loader.load('https://s3.amazonaws.com/cdn.irroba.com.br/assets/fonts_3d/helvetiker_regular.typeface.json', function (font) {
+                const textColor = 0x000000;
+
+                const textContent = itemData.id;
+
+                const textShape = font.generateShapes(textContent, 1);
+
+                const textGeometry = new THREE.ShapeGeometry(textShape);
+                const textMaterial = new THREE.MeshBasicMaterial({color: textColor});
+
+                textGeometry.computeBoundingBox();
+
+                const xMid = - 0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+                textGeometry.translate(xMid, 0, 0);
+
+                const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                textMesh.position.set(x_pos, y_pos, z_pos);
+                textMesh.rotation.z -= Math.PI;
+                textMesh.rotation.x -= Math.PI / 2;
+
+                scene.add(textMesh);
+                group.add(textMesh);
+            });
+
             // Definir a posição do item
             itemMesh.position.set(x_pos, y_pos, z_pos);
             itemLine.position.set(x_pos, y_pos, z_pos);
@@ -158,6 +183,7 @@ window.Packing.forEach(binData => {
             group.add(itemLine);
         });
         group.rotation.x -= Math.PI / 2;
+        group.rotation.z += Math.PI / 2;
     } else {
 
     }
