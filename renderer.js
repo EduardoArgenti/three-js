@@ -28,7 +28,8 @@ function shadeColor(color, percent) {
 }
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#87CEEB');
+// scene.background = new THREE.Color('#87CEEB');
+scene.background = new THREE.Color('#d1cfcf');
 
 const group = new THREE.Object3D();
 
@@ -40,6 +41,7 @@ scene.add(camera);
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
+    antialias: true
 });
 
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -65,6 +67,8 @@ scene.add(axesHelper);
 
 const controls = new OrbitControls( camera, renderer.domElement );
 
+const colors = window.BoxColors;
+
 window.Packing.forEach(binData => {
 
     const cube_width = binData.breadth;
@@ -85,6 +89,8 @@ window.Packing.forEach(binData => {
         group.add(line);
 
         const fittedItems = binData.fitted_items;
+
+        let item_count = 0;
 
         fittedItems.forEach(itemData => {
 
@@ -123,10 +129,14 @@ window.Packing.forEach(binData => {
                     break;
             }
 
-            // Definir cores
-            const itemColor = Math.floor(Math.random() * 0xffffff);
-            const lineColorStr = '#' + itemColor.toString(16).padStart(6, '0');
-            const lineColor = shadeColor(lineColorStr.toUpperCase(), -40);
+            // Definir cores aleatórias
+            // const itemColor = Math.floor(Math.random() * 0xffffff);
+            // const lineColorStr = '#' + itemColor.toString(16).padStart(6, '0');
+            // const lineColor = shadeColor(lineColorStr.toUpperCase(), -40);
+
+            // Cores estáticas
+            const itemColor = colors[item_count % colors.length];
+            const lineColor = shadeColor(itemColor, -40);
 
             // Criar item
             const itemGeometry = new THREE.BoxGeometry(breadth, height, length);
@@ -181,9 +191,12 @@ window.Packing.forEach(binData => {
 
             group.add(itemMesh);
             group.add(itemLine);
+
+            item_count++;
         });
         group.rotation.x -= Math.PI / 2;
         group.rotation.z += Math.PI / 2;
+
     } else {
 
     }
